@@ -16,14 +16,14 @@ export class KeyManager {
 
   // Initializations:
   contractAddress: Address;
-  contractToken: Promise<Token>;
   providers: ethers.providers.StaticJsonRpcProvider[] = [];
+  contractToken: Promise<Token>;
 
   // Class Constructor:
   constructor(contractAddress: Address, rpcs: URL[]) {
     this.contractAddress = contractAddress;
-    this.contractToken = getToken(this.providers, this.contractAddress);
     this.providers = rpcs.map(rpc => new ethers.providers.StaticJsonRpcProvider(rpc));
+    this.contractToken = getToken(this.providers, this.contractAddress);
   }
 
   /**
@@ -190,7 +190,7 @@ const query = async (providers: ethers.providers.StaticJsonRpcProvider[], addres
       } catch {
         if(++rpcID >= providers.length) {
           if(++errors >= maxQueryRetries) {
-            throw new Error('3PI Query Error: Could not query data on-chain.');
+            throw new Error('3PI Error: Could not query data on-chain.');
           } else {
             rpcID = 0;
           }
@@ -199,6 +199,6 @@ const query = async (providers: ethers.providers.StaticJsonRpcProvider[], addres
     }
     return result;
   } else {
-    throw new Error('3PI Error: Not initialized.');
+    throw new Error('3PI Error: No providers set.');
   }
 }
