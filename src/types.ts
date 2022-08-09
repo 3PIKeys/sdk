@@ -1,5 +1,5 @@
 
-// Address Types:
+// Address Type:
 export type Address = `0x${string}`;
 
 // ABI Types:
@@ -9,6 +9,15 @@ export type ABIIOType = `int${number}` | `int${number}[${number | ''}]` | `uint$
 // Generic Types:
 export type URL = `https://${string}`;
 export type Hash = `0x${string}`;
+
+/* ========================================================================================================================================================================= */
+
+// Token Interface:
+export interface Token {
+    address: Address
+    symbol: string
+    decimals: number
+}
 
 /* ========================================================================================================================================================================= */
 

@@ -8,7 +8,7 @@ The NPM package to interact with 3PI contracts.
 
 ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
-  
+
 ## Usage
 
 Install the package using the following:
@@ -20,32 +20,40 @@ npm i 3PI
 Importing the package can be done through the following:
 
 ```ts
-import { init, keys, utils } from '3PI';
+import { KeyManager } from '3PI';
 ```
 
-The `init` function is what can be used to initialize 3PI on your API or web application. You'll need to pass it the address of your 3PI key management contract on-chain, as well as at least 1 RPC you would like to use for querying data. If more RPCs are added, functionality will be more robust as if one fails, the SDK will utilize another one to attempt to successfully fetch data.
+The `KeyManager` class includes all the functionality of 3PI, including functions like `isKeyActive()`, `getExpiry()`, `extendKey()`, etc.
 
-The `keys` object contains all the main key management functions that interact with the 3PI contract, such as `getRemainingBalance()`, `getExpiry()`, etc.
+In order to initialize `KeyManager`, you will need to provide it with the contract address of your 3PI Key Manager contract on-chain, as well as at least 1 RPC URL to use when querying data. The more RPCs you add, the more robust the queries will be, since extra RPCs are used when any call fails.
 
-The `utils` object contains any useful functions that can be used to facilitate an integration, such as a generic `query()` function to query data on-chain, a `getTokenBalance()` function to query a user's token balance, etc.
+You can initialize `KeyManager` as follows:
 
-## Key Management Functions Available
+```ts
+const keyManager = new KeyManager('<YOUR_CONTRACT_ADDRESS_HERE>', ['<YOUR_RPC_URL_HERE>']);
+```
 
-- `getPublicKey(privateKey)`
-- `getExpiry(privateKey)`
-- `getTierID(privateKey)`
+## Functions Available
+
+- `isTierActive(tierID)`
 - `getTierPrice(tierID)`
-- `getRemainingBalance(privateKey)`
-
-## Utility Functions Available
-
-- `query(address, abi, method, args)`
-- `getTokenBalance(wallet)`
-- `getToken()`
+- `getNumTiers()`
+- `isKeyActive(apiKey)`
+- `getRemainingBalance(apiKey)`
+- `getExpiry(apiKey)`
+- `getOwner(apiKey)`
+- `getNumOwnedKeys(wallet)`
+- `getTierID(apiKey)`
+- `getOwnedKeys(wallet)`
+- `activateKey(apiKey, durationInMs, tierID)`
+- `extendKey(apiKey, durationInMs)`
+- `deactivateKey(apiKey)`
+- `getPublicHash(apiKey)`
+- `getWalletBalance(wallet)`
 
 ## Types
 
-Any types used within the SDK are located in the `src/types.ts` file.
+The SDK is written entirely in TypeScript, and any types used within the SDK are located in the `src/types.ts` file.
 
 If needed, these can be imported from `3PI/dist/types` as follows:
 
