@@ -17,7 +17,7 @@ Install the package using the following:
 npm i 3PI
 ```
 
-Importing the package can be done through the following:
+<!-- Importing the package can be done through the following:
 
 ```ts
 import weaver from 'weaverfi'
@@ -88,4 +88,4 @@ If needed, these can be imported from `weaverfi/dist/types`. Example:
 
 ```ts
 import type { ChainID, Address, Token } from 'weaverfi/dist/types';
-```
+``` -->
