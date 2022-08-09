@@ -1,11 +1,12 @@
 
 // Imports:
-import * as utils from './functions';
-
-// Type Imports:
-import type { Address } from './types';
+import * as keyFns from './keys';
+import * as initFns from './init';
+import * as utilFns from './utils';
 
 /* ========================================================================================================================================================================= */
 
 // 3PI Functionality:
-// <TODO> We'll need to export individual components since 3PI is an invalid variable name.
+export const init = initFns.init;
+export const keys = { ...keyFns };
+export const utils = { ...utilFns };

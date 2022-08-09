@@ -2,43 +2,13 @@
 // Imports:
 import { ethers } from 'ethers';
 import { mainABI, erc20ABI } from './ABIs';
+import { contractAddress, contractToken, providers } from './init';
 
 // Type Imports:
-import type { Address, URL, ABI } from './types';
+import type { Address, ABI } from './types';
 
 // Initializations:
 const maxQueryRetries = 3;
-let contractAddress: Address;
-let contractToken: { address: Address, symbol: string, decimals: number };
-let providers: ethers.providers.StaticJsonRpcProvider[] = [];
-
-/* ========================================================================================================================================================================= */
-
-/**
- * Function to initialize 3PI.
- * @param contract - The contract address on-chain for your deployed 3PI contract.
- * @param rpcs - The RPCs to use to query on-chain data.
- */
-export const init = async (contract: Address, rpcs: URL[]) => {
-  if(contract) {
-    if(rpcs.length > 0) {
-      
-      // Initializing Contract Address:
-      contractAddress = contract;
-
-      // Initializing Contract Token:
-      contractToken = await getToken();
-
-      // Initializing Providers:
-      providers = rpcs.map(rpc => new ethers.providers.StaticJsonRpcProvider(rpc));
-
-    } else {
-      throw new Error('3PI Initialization Error: No RPCs provided.');
-    }
-  } else {
-    throw new Error('3PI Initialization Error: No valid contract address provided.');
-  }
-}
 
 /* ========================================================================================================================================================================= */
 
@@ -71,7 +41,7 @@ export const query = async (address: Address, abi: ABI, method: string, args: an
     }
     return result;
   } else {
-    throw new Error('3PI Query Error: No providers initialized.');
+    throw new Error('3PI Error: Not initialized.');
   }
 }
 
@@ -91,7 +61,7 @@ export const getTokenBalance = async (wallet: Address, token?: Address) => {
       const tokenBalance = parseInt(await query(contractToken.address, erc20ABI, 'balanceOf', [wallet]));
       return tokenBalance / (10 ** contractToken.decimals);
     } else {
-      throw new Error('Token Balance Error: 3PI not initialized.');
+      throw new Error('3PI Error: Not initialized.');
     }
 
   // Other Token:
@@ -119,6 +89,6 @@ export const getToken = async () => {
     const decimals = parseInt(await query(address, erc20ABI, 'decimals', []));
     return { address, symbol, decimals };
   } else {
-    throw new Error('Token Error: 3PI not initialized.');
+    throw new Error('3PI Error: Not initialized.');
   }
 }
