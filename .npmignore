@@ -1,0 +1,7 @@
+/.github/
+/.vscode/
+/src/
+/dist/tests.js
+/dist/tests.d.ts
+tsconfig.json
+*.tgz
