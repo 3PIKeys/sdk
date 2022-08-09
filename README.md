@@ -17,75 +17,38 @@ Install the package using the following:
 npm i 3PI
 ```
 
-<!-- Importing the package can be done through the following:
+Importing the package can be done through the following:
 
 ```ts
-import weaver from 'weaverfi'
+import { init, keys, utils } from '3PI';
 ```
 
-Other options to suit different app configurations:
+The `init` function is what can be used to initialize 3PI on your API or web application. You'll need to pass it the address of your 3PI key management contract on-chain, as well as at least 1 RPC you would like to use for querying data. If more RPCs are added, functionality will be more robust as if one fails, the SDK will utilize another one to attempt to successfully fetch data.
 
-```ts
-import WeaverFi from 'weaverfi'
-import { WeaverFi } from 'weaverfi'
-const weaver = require('weaverfi').default
-```
+The `keys` object contains all the main key management functions that interact with the 3PI contract, such as `getRemainingBalance()`, `getExpiry()`, etc.
 
-The `WeaverFi` object (or `weaver` if you prefer to import it that way) contains some global methods such as `WeaverFi.getAllProjects()`, `WeaverFi.getAllTokens()` or `WeaverFi.getAllTokenPrices()`.
+The `utils` object contains any useful functions that can be used to facilitate an integration, such as a generic `query()` function to query data on-chain, a `getTokenBalance()` function to query a user's token balance, etc.
 
-Each supported chain has its own methods that can be used as `WeaverFi.ETH.getWalletBalance(wallet)`, for example.
+## Key Management Functions Available
 
-## Global Methods Available
+- `getPublicKey(privateKey)`
+- `getExpiry(privateKey)`
+- `getTierID(privateKey)`
+- `getTierPrice(tierID)`
+- `getRemainingBalance(privateKey)`
 
-- `getAllChains()`
-- `getAllChainInfo()`
-- `getAllProjects()`
-- `getAllTokens()`
-- `getAllTokenPrices()`
-- `getNativeTokenPrices()`
-- `fetchPrices()`
-- `getAllBalances(wallet)`
-
-## Chain Methods Available
+## Utility Functions Available
 
 - `query(address, abi, method, args)`
-- `queryBlocks(address, abi, event, querySize, args, start, end)`
-- `isAddress(address)`
-- `getTXCount(address)`
-- `getWalletBalance(wallet)`
-- `getProjectBalance(wallet, project)`
-- `getAllProjectBalances(wallet)`
-- `getNFTBalance(wallet)`
-- `getTokens()`
-- `getTokenLogo(symbol)`
-- `getGasEstimates()`
-- `getInfo()`
-- `getProjects()`
-- `getTokenPrices()`
-- `getTokenPrice(address, decimals)`
-- `updateTokenPrice(priceData)`
-- `fetchPrices()`
-
-The ETH chain also contains the `resolveENS(name)`, `lookupENS(address)` and `fetchAvatarENS(name)` methods.
-
-## Chains Supported
-
-- ETH (Ethereum)
-- BSC (Binance Smart Chain)
-- POLY (Polygon)
-- FTM (Fantom)
-- AVAX (Avalanche)
-- ONE (Harmony)
-- CRONOS (Cronos)
-- OP (Optimism)
-- ARB (Arbitrum)
+- `getTokenBalance(wallet)`
+- `getToken()`
 
 ## Types
 
-Any extra types used within the SDK are located in the `types.ts` file.
+Any types used within the SDK are located in the `src/types.ts` file.
 
-If needed, these can be imported from `weaverfi/dist/types`. Example:
+If needed, these can be imported from `3PI/dist/types` as follows:
 
 ```ts
-import type { ChainID, Address, Token } from 'weaverfi/dist/types';
-``` -->
+import type { Address, ABIEntry } from '3PI/dist/types';
+```
