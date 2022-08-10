@@ -131,16 +131,56 @@ export class KeyManager {
     return keys;
   }
 
-  activateKey = async (apiKey: string, durationInMs: number, tierID: number) => {
-    // <TODO>
+  /**
+   * Function to activate API key.
+   * @param apiKey - The API key to activate on the 3PI contract.
+   * @param durationInMs - How long the key should be valid for, in milliseconds.
+   * @param tierID - The tier ID of the API key.
+   * @param signer - The Signer object of the wallet signing the transaction.
+   * @returns Transaction receipt after completion.
+   */
+  activateKey = async (apiKey: string, durationInMs: number, tierID: number, signer: ethers.Signer) => {
+    const publicHash = this.getPublicHash(apiKey);
+    const txReceipt = await write(signer, this.contractAddress, mainABI, 'activateKey', [publicHash, durationInMs, tierID]);
+    return txReceipt;
   }
 
-  extendKey = async (apiKey: string, durationInMs: number) => {
-    // <TODO>
+  /**
+   * Function to extend the duration of an API key.
+   * @param apiKey - The API key to extend the duration of.
+   * @param durationInMs - For how long the API key should be extended for.
+   * @param signer - The Signer object of the wallet signing the transaction.
+   * @returns Transaction receipt after completion.
+   */
+  extendKey = async (apiKey: string, durationInMs: number, signer: ethers.Signer) => {
+    const publicHash = this.getPublicHash(apiKey);
+    const txReceipt = await write(signer, this.contractAddress, mainABI, 'extendKey', [publicHash, durationInMs]);
+    return txReceipt;
   }
 
-  deactivateKey = async (apiKey: string) => {
-    // <TODO>
+  /**
+   * Function to deactivate and withdraw all funds from an API key.
+   * @param apiKey - The API key to deactivate.
+   * @param signer - The Signer object of the wallet signing the transaction.
+   * @returns Transaction receipt after completion.
+   */
+  deactivateKey = async (apiKey: string, signer: ethers.Signer) => {
+    const publicHash = this.getPublicHash(apiKey);
+    const txReceipt = await write(signer, this.contractAddress, mainABI, 'deactivateKey', [publicHash]);
+    return txReceipt;
+  }
+
+  /**
+   * Function to transfer an API key to another wallet.
+   * @param apiKey - The API key to transfer.
+   * @param receiver - The wallet receiving the API key.
+   * @param signer - The Signer object of the wallet signing the transaction.
+   * @returns Transaction receipt after completion.
+   */
+  transferKey = async (apiKey: string, receiver: Address, signer: ethers.Signer) => {
+    const publicHash = this.getPublicHash(apiKey);
+    const txReceipt = await write(signer, this.contractAddress, mainABI, 'transfer', [publicHash, receiver]);
+    return txReceipt;
   }
 
   /**
@@ -201,4 +241,14 @@ export const query = async (providers: ethers.providers.StaticJsonRpcProvider[],
   } else {
     throw new Error('3PI Error: No providers set.');
   }
+}
+
+/* ========================================================================================================================================================================= */
+
+// Helper function to make blockchain transactions:
+export const write = async (signer: ethers.Signer, address: Address, abi: ABI, method: string, args: any[]) => {
+  let contract = new ethers.Contract(address, abi, signer);
+  let tx = await contract[method](...args);
+  let receipt = await tx.wait();
+  return receipt;
 }
