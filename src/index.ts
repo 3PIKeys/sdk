@@ -178,7 +178,7 @@ const getToken = async (providers: ethers.providers.StaticJsonRpcProvider[], con
 /* ========================================================================================================================================================================= */
 
 // Helper function to make blockchain queries:
-const query = async (providers: ethers.providers.StaticJsonRpcProvider[], address: Address, abi: ABI, method: string, args: any[]) => {
+export const query = async (providers: ethers.providers.StaticJsonRpcProvider[], address: Address, abi: ABI, method: string, args: any[]) => {
   if(providers.length > 0) {
     let result = undefined;
     let errors = 0;
