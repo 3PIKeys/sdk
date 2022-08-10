@@ -48,6 +48,7 @@ const keyManager = new KeyManager('<YOUR_CONTRACT_ADDRESS_HERE>', ['<YOUR_RPC_UR
 - `activateKey(apiKey, durationInMs, tierID)`
 - `extendKey(apiKey, durationInMs)`
 - `deactivateKey(apiKey)`
+- `transferKey(apiKey, receiver)`
 - `getPublicHash(apiKey)`
 - `getWalletBalance(wallet)`
 
