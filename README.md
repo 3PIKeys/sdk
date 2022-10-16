@@ -14,13 +14,13 @@ The NPM package to interact with 3PI contracts.
 Install the package using the following:
 
 ```
-npm i 3PI
+npm i 3pi
 ```
 
 Importing the package can be done through the following:
 
 ```ts
-import { KeyManager } from '3PI';
+import { KeyManager } from '3pi';
 ```
 
 The `KeyManager` class includes all the functionality of 3PI, including functions like `isKeyActive()`, `getExpiry()`, `extendKey()`, etc.
@@ -56,8 +56,8 @@ const keyManager = new KeyManager('<YOUR_CONTRACT_ADDRESS_HERE>', ['<YOUR_RPC_UR
 
 The SDK is written entirely in TypeScript, and any types used within the SDK are located in the `src/types.ts` file.
 
-If needed, these can be imported from `3PI/dist/types` as follows:
+If needed, these can be imported from `3pi/dist/types` as follows:
 
 ```ts
-import type { Address, ABIEntry } from '3PI/dist/types';
+import type { Address, ABIEntry } from '3pi/dist/types';
 ```
