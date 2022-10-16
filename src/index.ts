@@ -61,7 +61,8 @@ export class KeyManager {
    * @returns True or false.
    */
   isKeyActive = async (apiKey: string) => {
-    const isActive: boolean = await query(this.providers, this.contractAddress, mainABI, 'isKeyActive', [apiKey]);
+    const publicHash = this.getPublicHash(apiKey);
+    const isActive: boolean = await query(this.providers, this.contractAddress, mainABI, 'isKeyActive', [publicHash]);
     return isActive;
   }
 
