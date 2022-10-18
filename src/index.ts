@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import { mainABI, erc20ABI } from './ABIs';
 
 // Type Imports:
-import type { Address, URL, Hash, Token, ABI } from './types';
+import type { Address, URL, Hash, Token, ABI, KeyInfo } from './types';
 
 // Initializations:
 const maxQueryRetries = 3;
@@ -56,137 +56,117 @@ export class KeyManager {
   }
 
   /**
+   * Function to get the number of keys present on the 3PI contract.
+   * @returns Number of keys.
+   */
+  getNumKeys = async () => {
+    const numKeys = parseInt(await query(this.providers, this.contractAddress, mainABI, 'numKeys', []));
+    return numKeys;
+  }
+
+  /**
    * Function to check if a key is active (exists and is not expired).
-   * @param apiKey - The API key to query info for.
+   * @param hash - The public hash of the key to query info for.
    * @returns True or false.
    */
-  isKeyActive = async (apiKey: string) => {
-    const publicHash = this.getPublicHash(apiKey);
-    const isActive: boolean = await query(this.providers, this.contractAddress, mainABI, 'isKeyActive', [publicHash]);
+  isKeyActive = async (hash: Hash) => {
+    const isActive: boolean = await query(this.providers, this.contractAddress, mainABI, 'isKeyActive', [hash]);
     return isActive;
   }
 
   /**
    * Function to get a user's remaining balance on a given key.
-   * @param apiKey - The API key to query info for.
+   * @param hash - The public hash of the key to query info for.
    * @returns User's remaining balance.
    */
-  getRemainingBalance = async (apiKey: string) => {
-    const publicHash = this.getPublicHash(apiKey);
+  getRemainingBalance = async (hash: Hash) => {
     const contractToken = await this.contractToken;
-    const remainingBalance = parseInt(await query(this.providers, this.contractAddress, mainABI, 'remainingBalance', [publicHash]));
+    const remainingBalance = parseInt(await query(this.providers, this.contractAddress, mainABI, 'remainingBalance', [hash]));
     return remainingBalance / (10 ** contractToken.decimals);
   }
 
   /**
-   * Function to get expiry timestamp of a given key.
-   * @param apiKey - The API key to query info for.
-   * @returns Epoch time in milliseconds that the key will expire on.
+   * Function to get a key's info.
+   * @param hash - The public hash of the key to query info for.
+   * @returns All relevant key info.
    */
-  getExpiry = async (apiKey: string) => {
-    const publicHash = this.getPublicHash(apiKey);
-    const expiryTimestamp = parseInt(await query(this.providers, this.contractAddress, mainABI, 'expiryOf', [publicHash]));
-    return expiryTimestamp;
-  }
-
-  /**
-   * Function to get API key owner.
-   * @param apiKey - The API key to query info for.
-   * @returns Owner wallet address.
-   */
-  getOwner = async (apiKey: string) => {
-    const publicHash = this.getPublicHash(apiKey);
-    const owner: Address = await query(this.providers, this.contractAddress, mainABI, 'ownerOf', [publicHash]);
-    return owner;
-  }
-
-  /**
-   * Function to get number of keys owned by a specific wallet.
-   * @param wallet - The wallet address to query keys from.
-   * @returns Number of keys owned.
-   */
-  getNumOwnedKeys = async (wallet: Address) => {
-    const numKeys = parseInt(await query(this.providers, this.contractAddress, mainABI, 'numKeysOf', [wallet]));
-    return numKeys;
-  }
-
-  /**
-   * Function to get tier ID of a given key.
-   * @param apiKey - The API key to query info for.
-   * @returns Key's tier ID as an integer.
-   */
-  getTierID = async (apiKey: string) => {
-    const publicHash = this.getPublicHash(apiKey);
-    const tierID = parseInt(await query(this.providers, this.contractAddress, mainABI, 'tierIdOf', [publicHash]));
-    return tierID;
-  }
-
-  /**
-   * Function to get keys owned by a specific wallet.
-   * @param wallet - The wallet address to query keys from.
-   * @returns Array of API keys.
-   */
-  getOwnedKeys = async (wallet: Address) => {
-    const byteKeys: ethers.BytesLike[] = await query(this.providers, this.contractAddress, mainABI, 'keysOf', [wallet]);
-    const keys = byteKeys.map(bytes => ethers.utils.parseBytes32String(bytes));
-    return keys;
+  getKeyInfo = async (hash: Hash) => {
+    const keyInfo: KeyInfo = await query(this.providers, this.contractAddress, mainABI, 'keyInfo', [hash]);
+    return keyInfo;
   }
 
   /**
    * Function to activate API key.
-   * @param apiKey - The API key to activate on the 3PI contract.
+   * @param hash - The public hash of the key to activate on the 3PI contract.
    * @param durationInMs - How long the key should be valid for, in milliseconds.
    * @param tierID - The tier ID of the API key.
    * @param signer - The Signer object of the wallet signing the transaction.
    * @returns Transaction receipt after completion.
    */
-  activateKey = async (apiKey: string, durationInMs: number, tierID: number, signer: ethers.Signer) => {
-    const publicHash = this.getPublicHash(apiKey);
-    const txReceipt = await write(signer, this.contractAddress, mainABI, 'activateKey', [publicHash, durationInMs, tierID]);
+  activateKey = async (hash: Hash, durationInMs: number, tierID: number, signer: ethers.Signer) => {
+    const txReceipt = await write(signer, this.contractAddress, mainABI, 'activateKey', [hash, durationInMs, tierID]);
     return txReceipt;
   }
 
   /**
    * Function to extend the duration of an API key.
-   * @param apiKey - The API key to extend the duration of.
+   * @param hash - The public hash of the key to extend the duration of.
    * @param durationInMs - For how long the API key should be extended for.
    * @param signer - The Signer object of the wallet signing the transaction.
    * @returns Transaction receipt after completion.
    */
-  extendKey = async (apiKey: string, durationInMs: number, signer: ethers.Signer) => {
-    const publicHash = this.getPublicHash(apiKey);
-    const txReceipt = await write(signer, this.contractAddress, mainABI, 'extendKey', [publicHash, durationInMs]);
+  extendKey = async (hash: Hash, durationInMs: number, signer: ethers.Signer) => {
+    const txReceipt = await write(signer, this.contractAddress, mainABI, 'extendKey', [hash, durationInMs]);
     return txReceipt;
   }
 
   /**
    * Function to deactivate and withdraw all funds from an API key.
-   * @param apiKey - The API key to deactivate.
+   * @param hash - The publish hash of the key to deactivate.
    * @param signer - The Signer object of the wallet signing the transaction.
    * @returns Transaction receipt after completion.
    */
-  deactivateKey = async (apiKey: string, signer: ethers.Signer) => {
-    const publicHash = this.getPublicHash(apiKey);
-    const txReceipt = await write(signer, this.contractAddress, mainABI, 'deactivateKey', [publicHash]);
+  deactivateKey = async (hash: Hash, signer: ethers.Signer) => {
+    const txReceipt = await write(signer, this.contractAddress, mainABI, 'deactivateKey', [hash]);
     return txReceipt;
   }
 
   /**
-   * Function to transfer an API key to another wallet.
-   * @param apiKey - The API key to transfer.
-   * @param receiver - The wallet receiving the API key.
+   * Function to add new priced tier to the 3PI contract.
+   * @param price - The price per millisecond on the new tier.
    * @param signer - The Signer object of the wallet signing the transaction.
    * @returns Transaction receipt after completion.
    */
-  transferKey = async (apiKey: string, receiver: Address, signer: ethers.Signer) => {
-    const publicHash = this.getPublicHash(apiKey);
-    const txReceipt = await write(signer, this.contractAddress, mainABI, 'transfer', [publicHash, receiver]);
+  addTier = async (price: number, signer: ethers.Signer) => {
+    const txReceipt = await write(signer, this.contractAddress, mainABI, 'addTier', [price]);
+    return txReceipt;
+  }
+
+  /**
+   * Function to archive a tier on the 3PI contract (rejects new subscriptions).
+   * @param tierId - The tier ID to archive.
+   * @param signer - The Signer object of the wallet signing the transaction.
+   * @returns Transaction receipt after completion.
+   */
+  archiveTier = async (tierId: number, signer: ethers.Signer) => {
+    const txReceipt = await write(signer, this.contractAddress, mainABI, 'archiveTier', [tierId]);
+    return txReceipt;
+  }
+
+  /**
+   * Function to withdraw spent funds from multiple key hashes.
+   * @param hashes - The public hashes from API keys to withdraw from.
+   * @param signer - The Signer object of the wallet signing the transaction.
+   * @returns Transaction receipt after completion.
+   */
+  withdraw = async (hashes: Hash[], signer: ethers.Signer) => {
+    const txReceipt = await write(signer, this.contractAddress, mainABI, 'withdrawUsedBalances', [hashes]);
     return txReceipt;
   }
 
   /**
    * Function to convert an API key to its public hash.
-   * @param apiKey - The API key to convert.
+   * @param apiKey - The API key to get the public hash for.
    * @returns Key's corresponding public hash, as a hex string.
    */
   getPublicHash = (apiKey: string) => {

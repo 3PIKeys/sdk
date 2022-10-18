@@ -35,20 +35,26 @@ const keyManager = new KeyManager('<YOUR_CONTRACT_ADDRESS_HERE>', ['<YOUR_RPC_UR
 
 ## Functions Available
 
+### Read Only
 - `isTierActive(tierID)`
 - `getTierPrice(tierID)`
 - `getNumTiers()`
-- `isKeyActive(apiKey)`
-- `getRemainingBalance(apiKey)`
-- `getExpiry(apiKey)`
-- `getOwner(apiKey)`
-- `getNumOwnedKeys(wallet)`
-- `getTierID(apiKey)`
-- `getOwnedKeys(wallet)`
-- `activateKey(apiKey, durationInMs, tierID)`
-- `extendKey(apiKey, durationInMs)`
-- `deactivateKey(apiKey)`
-- `transferKey(apiKey, receiver)`
+- `getNumKeys()`
+- `isKeyActive(hash)`
+- `getRemainingBalance(hash)`
+- `getKeyInfo(hash)`
+
+### Key Management
+- `activateKey(hash, durationInMs, tierID, signer)`
+- `extendKey(hash, durationInMs, signer)`
+- `deactivateKey(hash, signer)`
+
+### Admin Controls
+- `addTier(price, signer)`
+- `archiveTier(tierId, signer)`
+- `withdraw(hashes, signer)`
+
+### Other
 - `getPublicHash(apiKey)`
 - `getWalletBalance(wallet)`
 
