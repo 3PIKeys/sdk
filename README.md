@@ -45,8 +45,8 @@ const keyManager = new KeyManager('<YOUR_CONTRACT_ADDRESS_HERE>', ['<YOUR_RPC_UR
 - `getKeyInfo(hash)`
 
 ### Key Management
-- `activateKey(hash, durationInMs, tierID, signer)`
-- `extendKey(hash, durationInMs, signer)`
+- `activateKey(hash, secDuration, tierID, signer)`
+- `extendKey(hash, secDuration, signer)`
 - `deactivateKey(hash, signer)`
 
 ### Admin Controls

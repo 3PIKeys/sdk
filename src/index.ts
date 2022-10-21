@@ -39,7 +39,7 @@ export class KeyManager {
   /**
    * Function to get the price of a given tier.
    * @param tierID - The tier ID of the tier to query for.
-   * @returns Tier's price per millisecond.
+   * @returns Tier's price per second.
    */
   getTierPrice = async (tierID: number) => {
     const tierPrice = parseInt(await query(this.providers, this.contractAddress, mainABI, 'tierPrice', [tierID]));
@@ -98,25 +98,25 @@ export class KeyManager {
   /**
    * Function to activate API key.
    * @param hash - The public hash of the key to activate on the 3PI contract.
-   * @param durationInMs - How long the key should be valid for, in milliseconds.
+   * @param duration - How long the key should be valid for, in seconds.
    * @param tierID - The tier ID of the API key.
    * @param signer - The Signer object of the wallet signing the transaction.
    * @returns Transaction receipt after completion.
    */
-  activateKey = async (hash: Hash, durationInMs: number, tierID: number, signer: ethers.Signer) => {
-    const txReceipt = await write(signer, this.contractAddress, mainABI, 'activateKey', [hash, durationInMs, tierID]);
+  activateKey = async (hash: Hash, duration: number, tierID: number, signer: ethers.Signer) => {
+    const txReceipt = await write(signer, this.contractAddress, mainABI, 'activateKey', [hash, duration, tierID]);
     return txReceipt;
   }
 
   /**
    * Function to extend the duration of an API key.
    * @param hash - The public hash of the key to extend the duration of.
-   * @param durationInMs - For how long the API key should be extended for.
+   * @param duration - For how long the API key should be extended for, in seconds.
    * @param signer - The Signer object of the wallet signing the transaction.
    * @returns Transaction receipt after completion.
    */
-  extendKey = async (hash: Hash, durationInMs: number, signer: ethers.Signer) => {
-    const txReceipt = await write(signer, this.contractAddress, mainABI, 'extendKey', [hash, durationInMs]);
+  extendKey = async (hash: Hash, duration: number, signer: ethers.Signer) => {
+    const txReceipt = await write(signer, this.contractAddress, mainABI, 'extendKey', [hash, duration]);
     return txReceipt;
   }
 
@@ -133,7 +133,7 @@ export class KeyManager {
 
   /**
    * Function to add new priced tier to the 3PI contract.
-   * @param price - The price per millisecond on the new tier.
+   * @param price - The price per second on the new tier.
    * @param signer - The Signer object of the wallet signing the transaction.
    * @returns Transaction receipt after completion.
    */
