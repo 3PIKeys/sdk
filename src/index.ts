@@ -121,7 +121,7 @@ export class KeyManager {
    * @param hash - The public hash of the key to query info for.
    * @returns Key's used balance.
    */
-  usedBalance = async (hash: Hash) => {
+  getUsedBalance = async (hash: Hash) => {
     const contractToken = await this.contractToken;
     const usedBalance = parseInt(await query(this.providers, this.contractAddress, mainABI, 'usedBalance', [hash]));
     return usedBalance / (10 ** contractToken.decimals);

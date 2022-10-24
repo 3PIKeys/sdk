@@ -41,18 +41,26 @@ const keyManager = new KeyManager('<YOUR_CONTRACT_ADDRESS_HERE>', ['<YOUR_RPC_UR
 - `getNumTiers()`
 - `getNumKeys()`
 - `isKeyActive(hash)`
+- `keyExists(hash)`
+- `getKeyHash(id)`
+- `getUserKeys(address)`
 - `getRemainingBalance(hash)`
+- `getUsedBalance(hash)`
 - `getKeyInfo(hash)`
+- `findUnrealizedAccounts()`
+- `getRealizedProfit()`
+- `getUnrealizedProfit()`
 
 ### Key Management
-- `activateKey(hash, secDuration, tierID, signer)`
-- `extendKey(hash, secDuration, signer)`
+- `activateKey(hash, duration, tierID, signer)`
+- `extendKey(hash, duration, signer)`
 - `deactivateKey(hash, signer)`
 
 ### Admin Controls
 - `addTier(price, signer)`
 - `archiveTier(tierId, signer)`
-- `withdraw(hashes, signer)`
+- `realizeProfit(hash, signer)`
+- `withdraw(signer)`
 
 ### Other
 - `getPublicHash(apiKey)`
