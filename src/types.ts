@@ -70,7 +70,7 @@ export interface ExtendedABITupleIO {
 export interface KeyInfo {
   startTime: number
   expiryTime: number
-  lastWithdrawal: number
+  realizationTime: number
   owner: Address
   tierId: number
 }

@@ -42,8 +42,9 @@ export class KeyManager {
    * @returns Tier's price per second.
    */
   getTierPrice = async (tierID: number) => {
+    const contractToken = await this.contractToken;
     const tierPrice = parseInt(await query(this.providers, this.contractAddress, mainABI, 'tierPrice', [tierID]));
-    return tierPrice;
+    return tierPrice / (10 ** contractToken.decimals);
   }
 
   /**
@@ -75,14 +76,55 @@ export class KeyManager {
   }
 
   /**
+   * Function to check if key exists.
+   * @param hash - The public hash of the key to query info for.
+   * @returns True or false.
+   */
+  keyExists = async (hash: Hash) => {
+    const keyExists: boolean = await query(this.providers, this.contractAddress, mainABI, 'keyExists', [hash]);
+    return keyExists;
+  }
+
+  /**
+   * Function to get a key's public hash from its key ID.
+   * @param id - The ID of the key to query info from.
+   * @returns The key's public hash.
+   */
+  getKeyHash = async (id: number) => {
+    const hash: Hash = await query(this.providers, this.contractAddress, mainABI, 'keyHashOf', [id]);
+    return hash;
+  }
+
+  /**
+   * Function to get a user's list of API keys.
+   * @param address - The user's address to query key info from.
+   * @returns The list of public key hashes from the given user.
+   */
+  getUserKeys = async (address: Address) => {
+    const hashes: Hash[] = await query(this.providers, this.contractAddress, mainABI, 'keyHashesOf', [address]);
+    return hashes;
+  }
+
+  /**
    * Function to get a user's remaining balance on a given key.
    * @param hash - The public hash of the key to query info for.
-   * @returns User's remaining balance.
+   * @returns Key's remaining balance.
    */
   getRemainingBalance = async (hash: Hash) => {
     const contractToken = await this.contractToken;
     const remainingBalance = parseInt(await query(this.providers, this.contractAddress, mainABI, 'remainingBalance', [hash]));
     return remainingBalance / (10 ** contractToken.decimals);
+  }
+
+  /**
+   * Function to get a key's used balance.
+   * @param hash - The public hash of the key to query info for.
+   * @returns Key's used balance.
+   */
+  usedBalance = async (hash: Hash) => {
+    const contractToken = await this.contractToken;
+    const usedBalance = parseInt(await query(this.providers, this.contractAddress, mainABI, 'usedBalance', [hash]));
+    return usedBalance / (10 ** contractToken.decimals);
   }
 
   /**
@@ -93,6 +135,46 @@ export class KeyManager {
   getKeyInfo = async (hash: Hash) => {
     const keyInfo: KeyInfo = await query(this.providers, this.contractAddress, mainABI, 'keyInfo', [hash]);
     return keyInfo;
+  }
+
+  /**
+   * Function to find accounts with unrealized used balances.
+   * @param options - Optional number of results, minimal used balances or filtering by expired keys only.
+   * @returns Array of key hashes and their unrealized used balances.
+   */
+  findUnrealizedAccounts = async (options?: { count?: number, min?: number, expired?: boolean }) => {
+    const accounts: { hash: Hash, usedBalance: number }[] = [];
+    const contractToken = await this.contractToken;
+    const count = options?.count ? options.count : 256;
+    const min = options?.min ? options.min : 0;
+    const expired = options?.expired ? options.expired : false;
+    const results: [Hash[], number[]] = await query(this.providers, this.contractAddress, mainABI, 'findUnrealizedAccounts', [count, min, expired]);
+    for(let i = 0; i < results[1].length; i++) {
+      if(results[1][i] > 0) {
+        accounts.push({ hash: results[0][i], usedBalance: results[1][i] / (10 ** contractToken.decimals) });
+      }
+    }
+    return accounts;
+  }
+
+  /**
+   * Function to get realized profit ready to be withdrawn.
+   * @returns Realized profit.
+   */
+  getRealizedProfit = async () => {
+    const contractToken = await this.contractToken;
+    const realizedProfit = parseInt(await query(this.providers, this.contractAddress, mainABI, 'realizedProfit', []));
+    return realizedProfit / (10 ** contractToken.decimals);
+  }
+
+  /**
+   * Function to get unrealized profit (yet to be realized).
+   * @returns Unrealized profit.
+   */
+  getUnrealizedProfit = async () => {
+    const contractToken = await this.contractToken;
+    const unrealizedProfit = parseInt(await query(this.providers, this.contractAddress, mainABI, 'unrealizedProfit', []));
+    return unrealizedProfit / (10 ** contractToken.decimals);
   }
 
   /**
@@ -154,13 +236,23 @@ export class KeyManager {
   }
 
   /**
-   * Function to withdraw spent funds from multiple key hashes.
-   * @param hashes - The public hashes from API keys to withdraw from.
+   * Function to realize profit from one key.
+   * @param hash - The public hash of the key to realize profits from.
    * @param signer - The Signer object of the wallet signing the transaction.
    * @returns Transaction receipt after completion.
    */
-  withdraw = async (hashes: Hash[], signer: ethers.Signer) => {
-    const txReceipt = await write(signer, this.contractAddress, mainABI, 'withdrawUsedBalances', [hashes]);
+  realizeProfit = async (hash: Hash, signer: ethers.Signer) => {
+    const txReceipt = await write(signer, this.contractAddress, mainABI, 'realizeProfit', [hash]);
+    return txReceipt;
+  }
+
+  /**
+   * Function to withdraw all realized profits from key manager contract.
+   * @param signer - The Signer object of the wallet signing the transaction.
+   * @returns Transaction receipt after completion.
+   */
+  withdraw = async (signer: ethers.Signer) => {
+    const txReceipt = await write(signer, this.contractAddress, mainABI, 'withdraw', []);
     return txReceipt;
   }
 
