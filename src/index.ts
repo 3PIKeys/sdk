@@ -261,7 +261,7 @@ export class KeyManager {
    */
   approve = async (amountInWei: ethers.BigNumberish, signer: ethers.Signer) => {
     const contractToken = await this.contractToken;
-    const txReceipt = await write(signer, contractToken.address, erc20ABI, 'approve', [ethers.BigNumber.from(amountInWei)]);
+    const txReceipt = await write(signer, contractToken.address, erc20ABI, 'approve', [this.contractAddress, ethers.BigNumber.from(amountInWei)]);
     return txReceipt;
   }
 
