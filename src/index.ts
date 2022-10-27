@@ -321,7 +321,7 @@ export const query = async (providers: ethers.providers.StaticJsonRpcProvider[],
 // Helper function to make blockchain transactions:
 export const write = async (signer: ethers.Signer, address: Address, abi: ABI, method: string, args: any[]) => {
   let contract = new ethers.Contract(address, abi, signer);
-  let tx = await contract[method](...args);
+  let tx: ethers.providers.TransactionResponse = await contract[method](...args);
   let receipt = await tx.wait();
   return receipt;
 }
