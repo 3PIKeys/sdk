@@ -39,12 +39,11 @@ export class KeyManager {
   /**
    * Function to get the price of a given tier.
    * @param tierID - The tier ID of the tier to query for.
-   * @returns Tier's price per second.
+   * @returns Tier's price per second, in wei.
    */
   getTierPrice = async (tierID: number) => {
-    const contractToken = await this.contractToken;
     const tierPrice = parseInt(await query(this.providers, this.contractAddress, mainABI, 'tierPrice', [tierID]));
-    return tierPrice / (10 ** contractToken.decimals);
+    return tierPrice;
   }
 
   /**
@@ -108,23 +107,21 @@ export class KeyManager {
   /**
    * Function to get a user's remaining balance on a given key.
    * @param hash - The public hash of the key to query info for.
-   * @returns Key's remaining balance.
+   * @returns Key's remaining balance, in wei.
    */
   getRemainingBalance = async (hash: Hash) => {
-    const contractToken = await this.contractToken;
     const remainingBalance = parseInt(await query(this.providers, this.contractAddress, mainABI, 'remainingBalance', [hash]));
-    return remainingBalance / (10 ** contractToken.decimals);
+    return remainingBalance;
   }
 
   /**
    * Function to get a key's used balance.
    * @param hash - The public hash of the key to query info for.
-   * @returns Key's used balance.
+   * @returns Key's used balance, in wei.
    */
   getUsedBalance = async (hash: Hash) => {
-    const contractToken = await this.contractToken;
     const usedBalance = parseInt(await query(this.providers, this.contractAddress, mainABI, 'usedBalance', [hash]));
-    return usedBalance / (10 ** contractToken.decimals);
+    return usedBalance;
   }
 
   /**
@@ -257,6 +254,18 @@ export class KeyManager {
   }
 
   /**
+   * Function to approve token expenditure to key manager contract.
+   * @param amountInWei - The amount to be approved for expenditure, in wei.
+   * @param signer - The Signer object of the wallet signing the transaction.
+   * @returns Transaction receipt after completion.
+   */
+  approve = async (amountInWei: number, signer: ethers.Signer) => {
+    const contractToken = await this.contractToken;
+    const txReceipt = await write(signer, contractToken.address, erc20ABI, 'approve', [amountInWei]);
+    return txReceipt;
+  }
+
+  /**
    * Function to convert an API key to its public hash.
    * @param apiKey - The API key to get the public hash for.
    * @returns Key's corresponding public hash, as a hex string.
@@ -280,12 +289,23 @@ export class KeyManager {
   /**
    * Function to fetch a wallet's individual token balance.
    * @param wallet - The wallet to query the token balance for.
-   * @returns Token balance from the specified wallet.
+   * @returns Token balance from the specified wallet, in wei.
    */
   getWalletBalance = async (wallet: Address) => {
     const contractToken = await this.contractToken;
     const tokenBalance = parseInt(await query(this.providers, contractToken.address, erc20ABI, 'balanceOf', [wallet]));
-    return tokenBalance / (10 ** contractToken.decimals);
+    return tokenBalance;
+  }
+
+  /**
+   * Function to fetch a wallet's token allowance granted to the key manager contract.
+   * @param wallet - The wallet to query the token allowance for.
+   * @returns Token allowance from the specified wallet, in wei.
+   */
+  getWalletAllowance = async (wallet: Address) => {
+    const contractToken = await this.contractToken;
+    const allowance = parseInt(await query(this.providers, contractToken.address, erc20ABI, 'allowance', [wallet, this.contractAddress]));
+    return allowance;
   }
 }
 

@@ -25,6 +25,8 @@ import { KeyManager } from '3pi';
 
 The `KeyManager` class includes all the functionality of 3PI, including functions like `isKeyActive()`, `getExpiry()`, `extendKey()`, etc.
 
+It also exposes attributes like `contractAddress`, `providers` and `contractToken` for ease of use.
+
 In order to initialize `KeyManager`, you will need to provide it with the contract address of your 3PI Key Manager contract on-chain, as well as at least 1 RPC URL to use when querying data. The more RPCs you add, the more robust the queries will be, since extra RPCs are used when any call fails.
 
 You can initialize `KeyManager` as follows:
@@ -52,6 +54,7 @@ const keyManager = new KeyManager('<YOUR_CONTRACT_ADDRESS_HERE>', ['<YOUR_RPC_UR
 - `getUnrealizedProfit()`
 
 ### Key Management
+- `approve(amountInWei, signer)`
 - `activateKey(hash, duration, tierID, signer)`
 - `extendKey(hash, duration, signer)`
 - `deactivateKey(hash, signer)`
@@ -66,6 +69,7 @@ const keyManager = new KeyManager('<YOUR_CONTRACT_ADDRESS_HERE>', ['<YOUR_RPC_UR
 - `getPublicHash(apiKey)`
 - `generateNewKey()`
 - `getWalletBalance(wallet)`
+- `getWalletAllowance(wallet)`
 
 ## Types
 
