@@ -259,9 +259,9 @@ export class KeyManager {
    * @param signer - The Signer object of the wallet signing the transaction.
    * @returns Transaction receipt after completion.
    */
-  approve = async (amountInWei: number, signer: ethers.Signer) => {
+  approve = async (amountInWei: ethers.BigNumberish, signer: ethers.Signer) => {
     const contractToken = await this.contractToken;
-    const txReceipt = await write(signer, contractToken.address, erc20ABI, 'approve', [amountInWei]);
+    const txReceipt = await write(signer, contractToken.address, erc20ABI, 'approve', [ethers.BigNumber.from(amountInWei)]);
     return txReceipt;
   }
 
