@@ -289,23 +289,23 @@ export class KeyManager {
   /**
    * Function to fetch a wallet's individual token balance.
    * @param wallet - The wallet to query the token balance for.
-   * @returns Token balance from the specified wallet, in wei.
+   * @returns Token balance from the specified wallet.
    */
   getWalletBalance = async (wallet: Address) => {
     const contractToken = await this.contractToken;
     const tokenBalance = parseInt(await query(this.providers, contractToken.address, erc20ABI, 'balanceOf', [wallet]));
-    return tokenBalance;
+    return tokenBalance / (10 ** contractToken.decimals);
   }
 
   /**
    * Function to fetch a wallet's token allowance granted to the key manager contract.
    * @param wallet - The wallet to query the token allowance for.
-   * @returns Token allowance from the specified wallet, in wei.
+   * @returns Token allowance from the specified wallet.
    */
   getWalletAllowance = async (wallet: Address) => {
     const contractToken = await this.contractToken;
     const allowance = parseInt(await query(this.providers, contractToken.address, erc20ABI, 'allowance', [wallet, this.contractAddress]));
-    return allowance;
+    return allowance / (10 ** contractToken.decimals);
   }
 }
 
