@@ -64,6 +64,7 @@ const keyManager = new KeyManager('<YOUR_CONTRACT_ADDRESS_HERE>', ['<YOUR_RPC_UR
 
 ### Other
 - `getPublicHash(apiKey)`
+- `generateNewKey()`
 - `getWalletBalance(wallet)`
 
 ## Types

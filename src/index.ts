@@ -262,8 +262,19 @@ export class KeyManager {
    * @returns Key's corresponding public hash, as a hex string.
    */
   getPublicHash = (apiKey: string) => {
-    const publicHash = ethers.utils.keccak256(apiKey) as Hash;
+    const bytes = ethers.utils.base58.decode(apiKey);
+    const publicHash = ethers.utils.keccak256(bytes) as Hash;
     return publicHash;
+  }
+
+  /**
+   * Function to generate new random API key.
+   * @returns New API key.
+   */
+  generateNewKey = () => {
+    const randomBytes = ethers.utils.randomBytes(32);
+    const apiKey = ethers.utils.base58.encode(randomBytes);
+    return apiKey;
   }
 
   /**
@@ -291,7 +302,7 @@ const getToken = async (providers: ethers.providers.StaticJsonRpcProvider[], con
 /* ========================================================================================================================================================================= */
 
 // Helper function to make blockchain queries:
-export const query = async (providers: ethers.providers.StaticJsonRpcProvider[], address: Address, abi: ABI, method: string, args: any[]) => {
+const query = async (providers: ethers.providers.StaticJsonRpcProvider[], address: Address, abi: ABI, method: string, args: any[]) => {
   if(providers.length > 0) {
     let result = undefined;
     let errors = 0;
@@ -319,7 +330,7 @@ export const query = async (providers: ethers.providers.StaticJsonRpcProvider[],
 /* ========================================================================================================================================================================= */
 
 // Helper function to make blockchain transactions:
-export const write = async (signer: ethers.Signer, address: Address, abi: ABI, method: string, args: any[]) => {
+const write = async (signer: ethers.Signer, address: Address, abi: ABI, method: string, args: any[]) => {
   let contract = new ethers.Contract(address, abi, signer);
   let tx: ethers.providers.TransactionResponse = await contract[method](...args);
   let receipt = await tx.wait();
