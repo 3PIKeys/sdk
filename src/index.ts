@@ -110,7 +110,7 @@ export class KeyManager {
    * @returns Key's remaining balance, in wei.
    */
   getRemainingBalance = async (hash: Hash) => {
-    const remainingBalance = parseInt(await query(this.providers, this.contractAddress, mainABI, 'remainingBalance', [hash]));
+    const remainingBalance = ethers.BigNumber.from(await query(this.providers, this.contractAddress, mainABI, 'remainingBalance', [hash]));
     return remainingBalance;
   }
 
@@ -120,7 +120,7 @@ export class KeyManager {
    * @returns Key's used balance, in wei.
    */
   getUsedBalance = async (hash: Hash) => {
-    const usedBalance = parseInt(await query(this.providers, this.contractAddress, mainABI, 'usedBalance', [hash]));
+    const usedBalance = ethers.BigNumber.from(await query(this.providers, this.contractAddress, mainABI, 'usedBalance', [hash]));
     return usedBalance;
   }
 
