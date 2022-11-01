@@ -130,7 +130,14 @@ export class KeyManager {
    * @returns All relevant key info.
    */
   getKeyInfo = async (hash: Hash) => {
-    const keyInfo: KeyInfo = await query(this.providers, this.contractAddress, mainABI, 'keyInfo', [hash]);
+    const rawKeyInfo: { startTime: string, expiryTime: string, realizationTime: string, owner: Address, tierId: string } = await query(this.providers, this.contractAddress, mainABI, 'keyInfo', [hash]);
+    const keyInfo: KeyInfo = {
+      startTime: parseInt(rawKeyInfo.startTime),
+      expiryTime: parseInt(rawKeyInfo.expiryTime),
+      realizationTime: parseInt(rawKeyInfo.realizationTime),
+      owner: rawKeyInfo.owner,
+      tierId: parseInt(rawKeyInfo.tierId)
+    }
     return keyInfo;
   }
 
