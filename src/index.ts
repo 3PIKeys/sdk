@@ -287,10 +287,14 @@ export class KeyManager {
    * Function to generate new random API key.
    * @returns New API key.
    */
-  generateNewKey = () => {
-    const randomBytes = ethers.utils.randomBytes(32);
+  generateNewKey = (options?: { bytes: number, append: string }) => {
+    const randomBytes = ethers.utils.randomBytes(options?.bytes || 32);
     const apiKey = ethers.utils.base58.encode(randomBytes);
-    return apiKey;
+    if(options?.append !== undefined && /^[A-HJ-NP-Za-km-z1-9]*$/.test(options.append)) {
+      return options.append + apiKey.slice(options.append.length);
+    } else {
+      return apiKey;
+    }
   }
 
   /**
